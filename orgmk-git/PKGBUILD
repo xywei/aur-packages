@@ -23,7 +23,7 @@ pkgver() {
 
 build() {
   cd "${srcdir}/${_pkgname}"
-  sed -i '/ORGMK_ROOT=\$\(PWD\)/c\ORGMK_ROOT=/usr/share/orgmk' Makefile
+  sed -i '/ORGMK_ROOT=\$(PWD)/c\ORGMK_ROOT=/usr/share/orgmk' Makefile
   make
 }
 
