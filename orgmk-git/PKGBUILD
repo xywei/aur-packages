@@ -24,25 +24,24 @@ pkgver() {
 build() {
   cd "${srcdir}/${_pkgname}"
 
-  # Fix PWD for sources of symlinks
-  sed -i '/PWD=\$(shell\ pwd)/c\PWD=\/usr\/share\/orgmk' Makefile
+  # Fix PWD for sources of symlinks, made portable with relative paths
+  sed -i '/PWD=\$(shell\ pwd)/c\PWD=..\/share\/orgmk' Makefile
 
   # Fix ORGMK_ROOT which gets hard-coded into emacs-lisp scripts
   sed -i '/ORGMK_ROOT=\$(PWD)/c\ORGMK_ROOT=\/usr\/share\/orgmk' Makefile
 
   # Fix BIN_DIR for destinations of symlinks
-  sed -i '/BIN_DIR=\/usr\/local\/bin/c\BIN_DIR=\/usr\/bin' Makefile
-
-  make
+  sed -i '/BIN_DIR=\/usr\/local\/bin/c\BIN_DIR=\${DESTDIR}\/usr\/bin' Makefile
 }
 
 package() {
-  mkdir -p "${pkgdir}"/usr/share/orgmk
-  mkdir -p "${pkgdir}"/usr/bin
-  cd "${srcdir}"
+  mkdir -p "${pkgdir}"/usr/share/orgmk/
+  mkdir -p "${pkgdir}"/usr/bin/
 
-  cp -R ${_pkgname}/* "${pkgdir}"/usr/share/orgmk
+  cp -r "${srcdir}/${_pkgname}"/* "${pkgdir}"/usr/share/orgmk/
 
-  cd /usr/share/orgmk
-  make install
+  cd "${pkgdir}"/usr/share/orgmk
+
+  make DESTDIR="${pkgdir}"
+  make DESTDIR="${pkgdir}" install
 }
